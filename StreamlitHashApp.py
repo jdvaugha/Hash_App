@@ -67,47 +67,45 @@ st.header("Provenance Hash Price")
 col1, col2 = st.columns(2)
 
 with col1:
-    st.subheader("Start Date")
-    st.header(str(start_date))
-
+    st.write("Start Date: ", str(start_date))
 with col2:
-    st.subheader("End Date")
-    st.header(str(end_date))
-
+    st.write("End Date: ", str(end_date))
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.subheader("Min Price")
-    st.header(str(df_price_hist.displayPricePerDisplayUnit.min()))
-
+    st.subheader("Min Price: "+ str(df_price_hist.displayPricePerDisplayUnit.min()))
 with col2:
-    st.subheader("Max Price")
-    st.header(str(df_price_hist.displayPricePerDisplayUnit.max()))
-
+    st.subheader("Avg Price: " + str(round(df_price_hist.displayPricePerDisplayUnit.mean(),3)))
 with col3:
-    st.subheader("Average Price")
-    st.header(str(round(df_price_hist.displayPricePerDisplayUnit.mean(),4)))
+    st.subheader("Max Price: "+ str(df_price_hist.displayPricePerDisplayUnit.max()))
+
 
 price_chart = alt.Chart(df_price_hist).mark_line().encode(
     x=alt.X('dateTime:T',title='Date'),
     y=alt.Y('displayPricePerDisplayUnit:Q',title='Price'),
     tooltip=['dateTime','displayPricePerDisplayUnit']
-).properties(width=1000, height=800)
+).interactive()
 
 chart_volume = alt.Chart(df_match_hist[['created','displayAmount','displayPricePerUnit','type']][df_match_hist['type']=='MATCH'].groupby('created')['displayAmount'].sum().reset_index()).mark_bar().encode(
     y=alt.Y('displayAmount:Q',title='Volume'),
     x=alt.X('created:T',title='Date'),
     tooltip=['created','displayAmount']
-).properties(width=1000, height=200)
+).interactive()
 
 order_book = alt.Chart(df_order_book[['displayPricePerDisplayUnit','displayTotalUnits','trade_type']]).mark_bar().encode(
-    y=alt.Y('displayPricePerDisplayUnit:Q', bin=alt.Bin(maxbins=40), axis=alt.Axis(orient='left'),title='Bid/Ask Offer Price'),
-    x=alt.X('displayTotalUnits:Q', scale=alt.Scale(reverse=False),title='Volume'),
+    x=alt.X('displayPricePerDisplayUnit:Q',title='Bid/Ask Offer Price'),
+    y=alt.Y('displayTotalUnits:Q', scale=alt.Scale(reverse=False),title='Volume'),
     color='trade_type',
     tooltip=['displayPricePerDisplayUnit','displayTotalUnits']
-).properties(width=200, height=800)
+).interactive()
 
-st.altair_chart(alt.hconcat(alt.vconcat(price_chart, chart_volume),order_book))
+st.subheader("Price History")
+st.altair_chart(price_chart, use_container_width=True)
+st.subheader("Volume History")
+st.altair_chart(chart_volume, use_container_width=True)
+st.subheader("Order Book")
+st.altair_chart(order_book, use_container_width=True)
+#st.altair_chart(alt.hconcat(alt.vconcat(price_chart, chart_volume),order_book))
 
 
 
