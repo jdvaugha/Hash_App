@@ -53,6 +53,13 @@ def get_data(num):
 
 df_price, df_order, df_match = get_data(1000)
 
+col_1, col_2 = st.columns(2)
+with col_1:
+    st.header("Provenance Hash")
+with col_2:
+    st.header("Current Price: " + str(df_price[['displayPricePerDisplayUnit']][df_price['dateTime']==df_price['dateTime'].max()].values[0][0]))
+
+
 start_date = st.sidebar.date_input('start date', value=datetime.datetime(2021, 5, 1))
 end_date = st.sidebar.date_input('end date', value=datetime.datetime.now())
 
@@ -62,7 +69,7 @@ df_price_hist, df_match_hist, df_order_book = update_date(df_price,
                                                           start_date,
                                                           end_date)
 
-st.header("Provenance Hash Price")
+
 
 col1, col2 = st.columns(2)
 
